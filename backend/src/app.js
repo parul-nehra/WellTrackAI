@@ -6,7 +6,7 @@ const authRoutes = require("./routes/authRouts.js")
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'https://welltrackai.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://well-track-ai.vercel.app'];
 
 app.use(cors({
   origin: allowedOrigins,
