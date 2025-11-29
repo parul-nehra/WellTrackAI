@@ -1,24 +1,37 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function DashboardNavbar() {
   const [userName, setUserName] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const name = localStorage.getItem('userName');
-    if (name) {
-      setUserName(name);
-    }
+    if (name) setUserName(name);
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    router.push('/login');
+  };
+
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-100 h-16 fixed top-0 left-0 right-0 z-10">
-      <div className="h-full px-4 flex justify-between items-center">
-        <Link href="/dashboard">
-          <h1 className="text-2xl font-bold text-[#FF6B35]">MyCampusDeals</h1>
-        </Link>
-        <div className="text-gray-700 font-medium">{userName}</div>
+    <nav className="bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
+          <Link href="/dashboard" className="text-xl font-bold text-teal-600">
+            WellTrackAI
+          </Link>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-700">{userName}</span>
+            <button onClick={handleLogout} className="text-gray-700 hover:text-red-600 transition-colors">
+              Logout
+            </button>
+          </div>
+        </div>
       </div>
     </nav>
   );

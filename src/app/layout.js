@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "MyCampusDeals",
-  description: "Your campus marketplace for amazing deals",
+  title: "WellTrackAI",
+  description: "Track your wellness journey",
 };
 
 export default function RootLayout({ children }) {

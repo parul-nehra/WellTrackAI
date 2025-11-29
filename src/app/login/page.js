@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { MdEmail, MdLock } from 'react-icons/md';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -14,7 +15,7 @@ export default function Login() {
     setError('');
 
     try {
-      const res = await fetch('https://mycampusdeals.onrender.com/api/auth/login', {
+      const res = await fetch('https://welltrackai.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -23,8 +24,6 @@ export default function Login() {
       const data = await res.json();
 
       if (res.ok) {
-        console.log('Login successful!');
-        console.log('JWT Token:', data.token);
         localStorage.setItem('token', data.token);
         localStorage.setItem('userName', data.name);
         router.push('/dashboard');
@@ -37,37 +36,63 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow">
-        <h2 className="text-3xl font-bold text-center text-[#FF6B35] mb-6">Login</h2>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B35] placeholder:text-gray-500 text-gray-900"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B35] placeholder:text-gray-500 text-gray-900"
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-[#FF6B35] text-white py-2 rounded-lg hover:bg-[#e55a2b] transition-colors"
-          >
-            Login
-          </button>
-        </form>
-        <p className="text-center mt-4 text-gray-600">
-          Don't have an account? <Link href="/signup" className="text-[#FF6B35] hover:underline">Sign Up</Link>
-        </p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">WellTrackAI</h1>
+          <p className="text-gray-600 mt-2">Sign in to your account</p>
+        </div>
+
+        <div className="bg-white rounded-xl p-8 shadow-sm">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <div className="relative">
+                <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <div className="relative">
+                <MdLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="w-full px-6 py-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition-colors">
+              Sign In
+            </button>
+          </form>
+
+          <p className="text-center mt-4 text-gray-600 text-sm">
+            Don't have an account?{' '}
+            <Link href="/signup" className="text-teal-600 hover:underline font-medium">
+              Sign Up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

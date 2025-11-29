@@ -6,7 +6,7 @@ const authRoutes = require("./routes/authRouts.js")
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'https://mycampusdeals.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://welltrackai.vercel.app'];
 
 app.use(cors({
   origin: allowedOrigins,
@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 // Basic GET route
 app.get('/', (req, res) => {
-  res.json({ message: 'MyCampusDeals Backend API is running!', status: 'OK' });
+  res.json({ message: 'WellTrackAI Backend API is running!', status: 'OK' });
 });
 
 app.use("/api/auth/", authRoutes)
