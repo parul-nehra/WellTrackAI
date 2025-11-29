@@ -1,21 +1,38 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { FaWalking, FaTint, FaBed, FaSmile, FaPlus, FaQuoteLeft } from 'react-icons/fa';
+import Link from 'next/link';
+import { FaWalking, FaTint, FaBed, FaSmile, FaPlus, FaQuoteLeft, FaBurn } from 'react-icons/fa';
 
 export default function DashboardPage() {
     const [userName, setUserName] = useState('');
     const [hydration, setHydration] = useState(6);
+    const [stats, setStats] = useState({ duration: 0, calories: 0 });
 
     useEffect(() => {
         const name = localStorage.getItem('userName');
         if (name) setUserName(name);
+        fetchStats();
     }, []);
 
+    const fetchStats = async () => {
+        try {
+            const res = await fetch('http://localhost:8000/api/activities/stats', {
+                credentials: 'include'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setStats(data);
+            }
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+        }
+    };
+
     const metrics = [
-        { title: 'Steps', value: '8,547', goal: '10,000', unit: 'steps', icon: FaWalking, color: 'text-teal-600', bg: 'bg-teal-50' },
+        { title: 'Active Time', value: stats.duration, goal: '60', unit: 'min', icon: FaWalking, color: 'text-teal-600', bg: 'bg-teal-50' },
+        { title: 'Calories', value: stats.calories, goal: '500', unit: 'kcal', icon: FaBurn, color: 'text-orange-600', bg: 'bg-orange-50' },
         { title: 'Water', value: `${hydration}`, goal: '8', unit: 'cups', icon: FaTint, color: 'text-blue-600', bg: 'bg-blue-50' },
         { title: 'Sleep', value: '7.5', goal: '8', unit: 'hrs', icon: FaBed, color: 'text-purple-600', bg: 'bg-purple-50' },
-        { title: 'Mood', value: 'Good', goal: 'Great', unit: '', icon: FaSmile, color: 'text-yellow-600', bg: 'bg-yellow-50' },
     ];
 
     const quotes = [
@@ -75,12 +92,12 @@ export default function DashboardPage() {
                 <div className="md:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <button className="p-4 rounded-xl border border-dashed border-gray-300 hover:border-teal-500 hover:bg-teal-50 transition-all group text-center">
+                        <Link href="/dashboard/activities" className="p-4 rounded-xl border border-dashed border-gray-300 hover:border-teal-500 hover:bg-teal-50 transition-all group text-center block">
                             <div className="w-10 h-10 mx-auto bg-teal-100 rounded-full flex items-center justify-center text-teal-600 mb-3 group-hover:scale-110 transition-transform">
                                 <FaWalking />
                             </div>
-                            <span className="font-medium text-gray-700 group-hover:text-teal-700">Log Activity</span>
-                        </button>
+                            <span className="font-medium text-gray-700 group-hover:text-teal-700">Activity Log</span>
+                        </Link>
                         <button className="p-4 rounded-xl border border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-all group text-center">
                             <div className="w-10 h-10 mx-auto bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-3 group-hover:scale-110 transition-transform">
                                 <FaTint />

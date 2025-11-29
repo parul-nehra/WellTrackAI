@@ -15,9 +15,16 @@ const signupUser = async (req, res) => {
   }
 
   try {
-    const existingUser = await prisma.users.findFirst({ where: { email } });
+    const existingUser = await prisma.users.findFirst({
+      where: {
+        OR: [
+          { email },
+          { phoneNumber }
+        ]
+      }
+    });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists!" });
+      return res.status(400).json({ message: "User with this email or phone number already exists!" });
     }
 
     const hashedPassword = await hashPassword(password);

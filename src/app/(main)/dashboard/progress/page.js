@@ -82,15 +82,15 @@ export default function ProgressPage() {
                         <h2 className="text-xl font-bold text-gray-900">Streak</h2>
                     </div>
                     <div className="grid grid-cols-7 gap-2 text-center">
-                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
-                            <div key={d} className="text-xs font-bold text-gray-400 mb-2">{d}</div>
+                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                            <div key={i} className="text-xs font-bold text-gray-400 mb-2">{d}</div>
                         ))}
                         {Array.from({ length: 30 }).map((_, i) => (
                             <div
                                 key={i}
                                 className={`aspect-square rounded-full flex items-center justify-center text-xs font-medium ${[1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 15, 16].includes(i)
-                                        ? 'bg-teal-500 text-white'
-                                        : 'bg-gray-50 text-gray-400'
+                                    ? 'bg-teal-500 text-white'
+                                    : 'bg-gray-50 text-gray-400'
                                     }`}
                             >
                                 {i + 1}
@@ -108,8 +108,8 @@ export default function ProgressPage() {
                         <div
                             key={i}
                             className={`p-4 rounded-xl border text-center transition-all ${badge.unlocked
-                                    ? 'border-yellow-200 bg-yellow-50'
-                                    : 'border-gray-200 bg-gray-50 opacity-60 grayscale'
+                                ? 'border-yellow-200 bg-yellow-50'
+                                : 'border-gray-200 bg-gray-50 opacity-60 grayscale'
                                 }`}
                         >
                             <div className="text-4xl mb-3">{badge.icon}</div>

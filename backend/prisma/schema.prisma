@@ -21,4 +21,15 @@ model Users {
   password    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  activities  Activity[]
+}
+
+model Activity {
+  id        Int      @id @default(autoincrement())
+  name      String
+  duration  Int      // in minutes
+  calories  Int?
+  date      DateTime @default(now())
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id])
 }
