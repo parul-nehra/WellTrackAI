@@ -36,7 +36,8 @@ const signupUser = async (req, res) => {
     res.cookie('token', tokens.accessTokens, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', maxAge: 24 * 60 * 60 * 1000 });
     return res.status(201).json({ message: "User created successfully!", token: tokens.accessTokens });
   } catch (err) {
-    return res.status(500).json({ message: "Server Error!" });
+    console.error("Signup error:", err);
+    return res.status(500).json({ message: "Server Error!", error: err.message });
   }
 };
 
@@ -68,7 +69,8 @@ const loginUser = async (req, res) => {
     });
     return res.status(200).json({ message: "Login successful!", token: tokens.accessTokens, name: user.name });
   } catch (err) {
-    return res.status(500).json({ message: "Server Error!" });
+    console.error("Login error:", err);
+    return res.status(500).json({ message: "Server Error!", error: err.message });
   }
 };
 
@@ -81,7 +83,8 @@ const getUser = async (req, res) => {
     }
     return res.status(200).json({ name: user.name, email: user.email });
   } catch (err) {
-    return res.status(500).json({ message: "Server Error!" });
+    console.error("GetUser error:", err);
+    return res.status(500).json({ message: "Server Error!", error: err.message });
   }
 };
 
