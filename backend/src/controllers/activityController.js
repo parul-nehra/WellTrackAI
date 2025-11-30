@@ -28,11 +28,63 @@ const createActivity = async (req, res) => {
 const getActivities = async (req, res) => {
     const userId = req.user.userId;
 
+    // Optional pagination parameters
+    const page = req.query.page ? parseInt(req.query.page) : null;
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+    // Optional search parameter
+    const search = req.query.search || "";
+
+    // Optional date filtering
+    const { startDate, endDate } = req.query;
+
     try {
-        const activities = await prisma.activity.findMany({
-            where: { userId },
+        // Build where clause
+        const whereClause = {
+            userId,
+            ...(search && {
+                name: {
+                    contains: search,
+                    mode: 'insensitive'
+                }
+            }),
+            ...(startDate && endDate && {
+                date: {
+                    gte: new Date(startDate),
+                    lte: new Date(endDate)
+                }
+            })
+        };
+
+        // Build query options
+        const queryOptions = {
+            where: whereClause,
             orderBy: { date: "desc" },
-        });
+        };
+
+        // Add pagination only if both page and limit are provided
+        if (page && limit) {
+            queryOptions.skip = (page - 1) * limit;
+            queryOptions.take = limit;
+        }
+
+        const activities = await prisma.activity.findMany(queryOptions);
+
+        // If pagination is requested, return with metadata
+        if (page && limit) {
+            const total = await prisma.activity.count({ where: whereClause });
+            return res.status(200).json({
+                data: activities,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit)
+                }
+            });
+        }
+
+        // Otherwise return simple array (backward compatible)
         res.status(200).json(activities);
     } catch (error) {
         console.error("Error fetching activities:", error);

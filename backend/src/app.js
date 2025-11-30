@@ -1,8 +1,13 @@
-// For Initialzing the express server - Connecting to server.ts further for running HTTP!
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/authRouts.js")
+const profileRoutes = require("./routes/profileRoutes.js")
+const progressRoutes = require("./routes/progressRoutes.js")
+const activityRoutes = require("./routes/activityRoutes.js")
+const goalRoutes = require("./routes/goalRoutes.js")
+const healthRoutes = require("./routes/healthRoutes.js")
+const aiRoutes = require("./routes/aiRoutes.js")
 
 const app = express();
 
@@ -26,5 +31,11 @@ app.get('/', (req, res) => {
 });
 
 app.use("/api/auth/", authRoutes)
+app.use("/api/profile", profileRoutes)
+app.use("/api/progress", progressRoutes)
+app.use("/api/activities", activityRoutes)
+app.use("/api/goals", goalRoutes)
+app.use("/api/health", healthRoutes)
+app.use("/api/ai", aiRoutes)
 
 module.exports = app;

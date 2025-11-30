@@ -1,9 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { MdMenu } from 'react-icons/md';
 import Link from 'next/link';
 
-export default function DashboardNavbar() {
+export default function DashboardNavbar({ onMenuClick }) {
   const [userName, setUserName] = useState('');
   const router = useRouter();
 
@@ -19,15 +20,23 @@ export default function DashboardNavbar() {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4">
+    <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-40 transition-colors duration-300">
+      <div className="px-4">
         <div className="flex justify-between items-center h-16">
-          <Link href="/dashboard" className="text-xl font-bold text-teal-600">
-            WellTrackAI
-          </Link>
           <div className="flex items-center gap-4">
-            <span className="text-gray-700">{userName}</span>
-            <button onClick={handleLogout} className="text-gray-700 hover:text-red-600 transition-colors">
+            <button
+              onClick={onMenuClick}
+              className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <MdMenu className="text-2xl" />
+            </button>
+            <Link href="/dashboard" className="text-xl font-bold text-teal-600 dark:text-teal-400 md:ml-0">
+              WellTrackAI
+            </Link>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-700 dark:text-gray-200">{userName}</span>
+            <button onClick={handleLogout} className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors">
               Logout
             </button>
           </div>

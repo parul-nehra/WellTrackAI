@@ -19,9 +19,15 @@ model Users {
   email       String   @unique
   phoneNumber String   @unique
   password    String
+  gender      String?
+  dateOfBirth DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   activities  Activity[]
+  healthMetrics HealthMetric[]
+  goals       Goal[]
+  achievements Achievement[]
+  streaks     Streak[]
 }
 
 model Activity {
@@ -31,5 +37,51 @@ model Activity {
   calories  Int?
   date      DateTime @default(now())
   userId    Int
-  user      Users    @relation(fields: [userId], references: [id])
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model HealthMetric {
+  id        Int      @id @default(autoincrement())
+  type      String   // Water, Sleep, Mood
+  value     String   // e.g., "6" for cups, "7.5" for hours, "Good" for mood
+  date      DateTime @default(now())
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Goal {
+  id        Int      @id @default(autoincrement())
+  title     String
+  category  String   // Fitness, Nutrition, Health, Mindfulness
+  target    Int      // Target value
+  current   Int      @default(0) // Current progress
+  status    String   @default("Not Started") // Not Started, In Progress, Completed
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Achievement {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  icon        String
+  criteria    String   // JSON string describing unlock criteria
+  unlocked    Boolean  @default(false)
+  unlockedAt  DateTime?
+  userId      Int
+  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Streak {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @unique
+  completed Boolean  @default(false)
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+

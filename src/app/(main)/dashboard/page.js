@@ -5,18 +5,33 @@ import { FaWalking, FaTint, FaBed, FaSmile, FaPlus, FaQuoteLeft, FaBurn } from '
 
 export default function DashboardPage() {
     const [userName, setUserName] = useState('');
-    const [hydration, setHydration] = useState(6);
     const [stats, setStats] = useState({ duration: 0, calories: 0 });
+    const [healthMetrics, setHealthMetrics] = useState({ water: 0, sleep: 0, mood: 'Not Set' });
 
     useEffect(() => {
-        const name = localStorage.getItem('userName');
-        if (name) setUserName(name);
+        fetchUserProfile();
         fetchStats();
+        fetchHealthMetrics();
     }, []);
+
+    const fetchUserProfile = async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile`, {
+                credentials: 'include'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setUserName(data.name || 'User');
+            }
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            setUserName('User');
+        }
+    };
 
     const fetchStats = async () => {
         try {
-            const res = await fetch('http://localhost:8000/api/activities/stats', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/activities/stats`, {
                 credentials: 'include'
             });
             if (res.ok) {
@@ -28,11 +43,43 @@ export default function DashboardPage() {
         }
     };
 
+    const fetchHealthMetrics = async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/health/today`, {
+                credentials: 'include'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setHealthMetrics(data);
+            }
+        } catch (error) {
+            console.error('Error fetching health metrics:', error);
+        }
+    };
+
+    const updateWater = async () => {
+        const newValue = parseInt(healthMetrics.water) + 1;
+        if (newValue > 8) return;
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/health`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ type: 'Water', value: newValue.toString() })
+            });
+            if (res.ok) {
+                setHealthMetrics(prev => ({ ...prev, water: newValue.toString() }));
+            }
+        } catch (error) {
+            console.error('Error updating water:', error);
+        }
+    };
+
     const metrics = [
         { title: 'Active Time', value: stats.duration, goal: '60', unit: 'min', icon: FaWalking, color: 'text-teal-600', bg: 'bg-teal-50' },
         { title: 'Calories', value: stats.calories, goal: '500', unit: 'kcal', icon: FaBurn, color: 'text-orange-600', bg: 'bg-orange-50' },
-        { title: 'Water', value: `${hydration}`, goal: '8', unit: 'cups', icon: FaTint, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { title: 'Sleep', value: '7.5', goal: '8', unit: 'hrs', icon: FaBed, color: 'text-purple-600', bg: 'bg-purple-50' },
+        { title: 'Water', value: healthMetrics.water, goal: '8', unit: 'cups', icon: FaTint, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { title: 'Sleep', value: healthMetrics.sleep, goal: '8', unit: 'hrs', icon: FaBed, color: 'text-purple-600', bg: 'bg-purple-50' },
     ];
 
     const quotes = [
@@ -68,14 +115,7 @@ export default function DashboardPage() {
                                 <div className={`w-12 h-12 rounded-full ${metric.bg} flex items-center justify-center`}>
                                     <Icon className={`text-xl ${metric.color}`} />
                                 </div>
-                                {metric.title === 'Water' && (
-                                    <button
-                                        onClick={() => setHydration(prev => Math.min(prev + 1, 8))}
-                                        className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors"
-                                    >
-                                        <FaPlus className="text-xs" />
-                                    </button>
-                                )}
+
                             </div>
                             <h3 className="text-sm font-medium text-gray-500 mb-1">{metric.title}</h3>
                             <div className="flex items-baseline gap-2">
@@ -98,18 +138,18 @@ export default function DashboardPage() {
                             </div>
                             <span className="font-medium text-gray-700 group-hover:text-teal-700">Activity Log</span>
                         </Link>
-                        <button className="p-4 rounded-xl border border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-all group text-center">
+                        <Link href="/dashboard/health/log" className="p-4 rounded-xl border border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-all group text-center block">
                             <div className="w-10 h-10 mx-auto bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-3 group-hover:scale-110 transition-transform">
                                 <FaTint />
                             </div>
                             <span className="font-medium text-gray-700 group-hover:text-blue-700">Log Water</span>
-                        </button>
-                        <button className="p-4 rounded-xl border border-dashed border-gray-300 hover:border-purple-500 hover:bg-purple-50 transition-all group text-center">
+                        </Link>
+                        <Link href="/dashboard/health/log" className="p-4 rounded-xl border border-dashed border-gray-300 hover:border-purple-500 hover:bg-purple-50 transition-all group text-center block">
                             <div className="w-10 h-10 mx-auto bg-purple-100 rounded-full flex items-center justify-center text-purple-600 mb-3 group-hover:scale-110 transition-transform">
                                 <FaBed />
                             </div>
                             <span className="font-medium text-gray-700 group-hover:text-purple-700">Log Sleep</span>
-                        </button>
+                        </Link>
                     </div>
                 </div>
 

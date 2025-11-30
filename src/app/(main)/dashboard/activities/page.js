@@ -13,12 +13,12 @@ export default function ActivitiesPage() {
 
     const fetchActivities = async () => {
         try {
-            const res = await fetch('http://localhost:8000/api/activities', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/activities`, {
                 credentials: 'include'
             });
             if (res.ok) {
                 const data = await res.json();
-                setActivities(data);
+                setActivities(Array.isArray(data) ? data : []);
             }
         } catch (error) {
             console.error('Error fetching activities:', error);

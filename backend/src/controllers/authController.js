@@ -59,7 +59,13 @@ const loginUser = async (req, res) => {
     }
 
     const tokens = generateToken(user.id);
-    res.cookie('token', tokens.accessTokens, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', maxAge: 24 * 60 * 60 * 1000 });
+    console.log("Login - Setting cookie:", tokens.accessTokens.substring(0, 10) + "...");
+    res.cookie('token', tokens.accessTokens, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000
+    });
     return res.status(200).json({ message: "Login successful!", token: tokens.accessTokens, name: user.name });
   } catch (err) {
     return res.status(500).json({ message: "Server Error!" });
