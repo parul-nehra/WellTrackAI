@@ -8,6 +8,7 @@ const activityRoutes = require("./routes/activityRoutes.js")
 const goalRoutes = require("./routes/goalRoutes.js")
 const healthRoutes = require("./routes/healthRoutes.js")
 const aiRoutes = require("./routes/aiRoutes.js")
+const leaderboardRoutes = require("./routes/leaderboardRoutes.js")
 
 const app = express();
 
@@ -37,5 +38,6 @@ app.use("/api/activities", activityRoutes)
 app.use("/api/goals", goalRoutes)
 app.use("/api/health", healthRoutes)
 app.use("/api/ai", aiRoutes)
+app.use("/api/leaderboard", leaderboardRoutes)
 
 module.exports = app;
