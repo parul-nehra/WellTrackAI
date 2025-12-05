@@ -5,7 +5,7 @@ WellTrackAI is a comprehensive health and wellness tracking application designed
 ## 🚀 Live Links
 
 - **Frontend**: [https://well-track-ai.vercel.app/](https://well-track-ai.vercel.app/)
-- **Backend**: `http://localhost:8000` (Local Development)
+- **Backend**: [https://welltrackai.onrender.com](https://welltrackai.onrender.com)
 - **Repository**: [https://github.com/parul-nehra/WellTrackAI](https://github.com/parul-nehra/WellTrackAI)
 
 ## 🛠️ Tech Stack
