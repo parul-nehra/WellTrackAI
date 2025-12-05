@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FaBullseye, FaCheckCircle, FaClock, FaPlus, FaWalking, FaTint, FaBed, FaLeaf, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaBullseye, FaCheckCircle, FaClock, FaPlus, FaWalking, FaTint, FaBed, FaLeaf, FaTimes, FaTrash, FaSearch, FaFilter, FaSort, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 export default function GoalsPage() {
     const [goals, setGoals] = useState([]);
@@ -9,20 +9,48 @@ export default function GoalsPage() {
     const [showModal, setShowModal] = useState(false);
     const [selectedGoal, setSelectedGoal] = useState(null);
     const [progressValue, setProgressValue] = useState('');
+
+    // Filter and pagination states
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [selectedStatus, setSelectedStatus] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState('createdAt');
+    const [sortOrder, setSortOrder] = useState('desc');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(6);
+    const [pagination, setPagination] = useState(null);
 
     useEffect(() => {
         fetchGoals();
-    }, []);
+    }, [selectedCategory, selectedStatus, searchQuery, sortBy, sortOrder, currentPage, itemsPerPage]);
 
     const fetchGoals = async () => {
+        setLoading(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/goals`, {
+            // Build query parameters
+            const params = new URLSearchParams();
+            params.append('page', currentPage);
+            params.append('limit', itemsPerPage);
+
+            if (selectedCategory !== 'All') params.append('category', selectedCategory);
+            if (selectedStatus !== 'All') params.append('status', selectedStatus);
+            if (searchQuery) params.append('search', searchQuery);
+
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/goals?${params.toString()}`, {
                 credentials: 'include'
             });
+
             if (res.ok) {
                 const data = await res.json();
-                setGoals(Array.isArray(data) ? data : []);
+                // Check if response has pagination (backend returns {data, pagination})
+                if (data.data && data.pagination) {
+                    setGoals(data.data);
+                    setPagination(data.pagination);
+                } else {
+                    // Fallback for non-paginated response
+                    setGoals(Array.isArray(data) ? data : []);
+                    setPagination(null);
+                }
             }
         } catch (error) {
             console.error('Error fetching goals:', error);
@@ -62,10 +90,18 @@ export default function GoalsPage() {
         }
     };
 
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Reset to first page on search
+    };
+
+    const handleFilterChange = (filterType, value) => {
+        if (filterType === 'category') setSelectedCategory(value);
+        if (filterType === 'status') setSelectedStatus(value);
+        setCurrentPage(1); // Reset to first page on filter change
+    };
+
     const goalsArray = Array.isArray(goals) ? goals : [];
-    const filteredGoals = selectedCategory === 'All' 
-        ? goalsArray 
-        : goalsArray.filter(g => g.category === selectedCategory);
 
     const getIconForCategory = (category) => {
         switch (category) {
@@ -88,7 +124,8 @@ export default function GoalsPage() {
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
+            {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">My Goals</h1>
@@ -99,36 +136,108 @@ export default function GoalsPage() {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {['All', 'Fitness', 'Nutrition', 'Mindfulness'].map((cat) => (
-                    <button
-                        key={cat}
-                        onClick={() => setSelectedCategory(cat)}
-                        className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                            selectedCategory === cat 
-                                ? 'bg-gray-900 text-white' 
-                                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-                        }`}
-                    >
-                        {cat}
-                    </button>
-                ))}
+            {/* Search Bar */}
+            <div className="relative">
+                <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                    type="text"
+                    placeholder="Search goals by title..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                />
             </div>
 
+            {/* Filters */}
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Category Filter */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <FaFilter className="inline mr-2" />Category
+                        </label>
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => handleFilterChange('category', e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500"
+                        >
+                            <option value="All">All Categories</option>
+                            <option value="Fitness">Fitness</option>
+                            <option value="Nutrition">Nutrition</option>
+                            <option value="Health">Health</option>
+                            <option value="Mindfulness">Mindfulness</option>
+                        </select>
+                    </div>
+
+                    {/* Status Filter */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <FaFilter className="inline mr-2" />Status
+                        </label>
+                        <select
+                            value={selectedStatus}
+                            onChange={(e) => handleFilterChange('status', e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500"
+                        >
+                            <option value="All">All Statuses</option>
+                            <option value="Not Started">Not Started</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+
+                    {/* Items Per Page */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Items per page
+                        </label>
+                        <select
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                                setItemsPerPage(parseInt(e.target.value));
+                                setCurrentPage(1);
+                            }}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500"
+                        >
+                            <option value="6">6 per page</option>
+                            <option value="12">12 per page</option>
+                            <option value="24">24 per page</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {/* Results Info */}
+            {pagination && (
+                <div className="flex justify-between items-center text-sm text-gray-600">
+                    <span>
+                        Showing {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, pagination.total)} of {pagination.total} goals
+                    </span>
+                    <span className="text-gray-500">
+                        Page {currentPage} of {pagination.totalPages}
+                    </span>
+                </div>
+            )}
+
+            {/* Goals Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {loading ? (
                     <div className="col-span-2 text-center py-10 text-gray-500">Loading goals...</div>
-                ) : filteredGoals.length === 0 ? (
+                ) : goalsArray.length === 0 ? (
                     <div className="col-span-2 text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
                         <FaBullseye className="mx-auto text-4xl text-gray-300 mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900">No goals yet</h3>
-                        <p className="text-gray-500 mb-4">Create your first wellness goal!</p>
+                        <h3 className="text-lg font-medium text-gray-900">No goals found</h3>
+                        <p className="text-gray-500 mb-4">
+                            {searchQuery || selectedCategory !== 'All' || selectedStatus !== 'All'
+                                ? 'Try adjusting your filters or search query'
+                                : 'Create your first wellness goal!'}
+                        </p>
                         <Link href="/dashboard/goals/create" className="text-teal-600 hover:text-teal-700 font-medium">
                             Create a goal now &rarr;
                         </Link>
                     </div>
                 ) : (
-                    filteredGoals.map((goal) => {
+                    goalsArray.map((goal) => {
                         const Icon = getIconForCategory(goal.category);
                         const colors = getColorForCategory(goal.category);
                         const progress = Math.round((goal.current / goal.target) * 100);
@@ -190,6 +299,58 @@ export default function GoalsPage() {
                     })
                 )}
             </div>
+
+            {/* Pagination Controls */}
+            {pagination && pagination.totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2">
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                        <FaChevronLeft size={12} /> Previous
+                    </button>
+
+                    <div className="flex gap-1">
+                        {[...Array(pagination.totalPages)].map((_, idx) => {
+                            const pageNum = idx + 1;
+                            // Show first, last, current, and adjacent pages
+                            if (
+                                pageNum === 1 ||
+                                pageNum === pagination.totalPages ||
+                                (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                            ) {
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`px-4 py-2 rounded-lg ${currentPage === pageNum
+                                                ? 'bg-teal-600 text-white'
+                                                : 'border border-gray-200 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            } else if (
+                                pageNum === currentPage - 2 ||
+                                pageNum === currentPage + 2
+                            ) {
+                                return <span key={pageNum} className="px-2">...</span>;
+                            }
+                            return null;
+                        })}
+                    </div>
+
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.min(pagination.totalPages, prev + 1))}
+                        disabled={currentPage === pagination.totalPages}
+                        className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                        Next <FaChevronRight size={12} />
+                    </button>
+                </div>
+            )}
 
             {/* Update Progress Modal */}
             {showModal && selectedGoal && (

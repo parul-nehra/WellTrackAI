@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { MdDashboard, MdFitnessCenter, MdPerson } from 'react-icons/md';
-import { FaRobot, FaBullseye, FaChartLine } from 'react-icons/fa';
+import { FaRobot, FaBullseye, FaChartLine, FaTrophy } from 'react-icons/fa';
 
 export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
@@ -13,6 +13,7 @@ export default function Sidebar({ isOpen, onClose }) {
     { name: 'Health', href: '/dashboard/health', icon: MdFitnessCenter },
     { name: 'Goals', href: '/dashboard/goals', icon: FaBullseye },
     { name: 'Progress', href: '/dashboard/progress', icon: FaChartLine },
+    { name: 'Compete', href: '/dashboard/compete', icon: FaTrophy },
     { name: 'Profile', href: '/dashboard/profile', icon: MdPerson },
   ];
 
