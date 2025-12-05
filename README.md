@@ -24,16 +24,38 @@ WellTrackAI is a comprehensive health and wellness tracking application designed
 - **Authentication**: JWT & bcrypt
 - **AI Integration**: Google Gemini API
 
-## ✨ Features
+## 📄 Pages & CRUD Operations
 
-- **User Authentication**: Secure Sign Up and Login functionality.
-- **Dashboard**: Overview of user progress and daily stats.
-- **Profile Management**: Update user details and settings.
-- **Activity Tracking**: Log and view daily physical activities.
-- **Goal Setting**: Set and track personal health goals.
-- **Health Metrics**: Monitor vital health statistics.
-- **AI Insights**: Get personalized health advice powered by Gemini AI.
-- **Progress Monitoring**: Visual representation of your journey.
+### Authentication Pages
+- **Landing Page** (`/`): Welcome page with app overview
+- **Sign Up** (`/signup`): User registration
+- **Login** (`/login`): User authentication
+
+### Dashboard Pages
+- **Main Dashboard** (`/dashboard`): Overview of daily stats (activities, goals, health metrics)
+- **Activities** (`/dashboard/activities`): View all activities with **pagination, search, date filtering** | **CREATE** new activity
+- **Goals** (`/dashboard/goals`): View all goals with **pagination, search, status/category filtering** | **CREATE, UPDATE, DELETE** goals
+- **Health Metrics** (`/dashboard/health`): View health metrics with **pagination, type filtering** | **CREATE** (auto-updates if exists for the day)
+- **Progress** (`/dashboard/progress`): Visual charts and progress tracking
+- **AI Assistant** (`/dashboard/ai-assistant`): Get AI-powered health insights
+- **Compete** (`/dashboard/compete`): Leaderboard and competition features
+
+### Profile Pages
+- **Profile** (`/dashboard/profile`): View and **UPDATE** user details (name, phone)
+- **Appearance** (`/dashboard/profile/appearance`): Theme customization
+- **Notifications** (`/dashboard/profile/notifications`): Notification preferences
+- **Security** (`/dashboard/profile/security`): **UPDATE** password, **DELETE** account
+
+### CRUD Summary
+| Feature | Create | Read | Update | Delete |
+|---------|--------|------|--------|--------|
+| **Activities** | ✅ | ✅ | ❌ | ❌ |
+| **Goals** | ✅ | ✅ | ✅ | ✅ |
+| **Health Metrics** | ✅ | ✅ | ✅* | ❌ |
+| **Profile** | ❌ | ✅ | ✅ | ✅** |
+
+*Auto-updates if metric exists for the same day  
+**Delete entire account
 
 ## 📦 Installation & Setup
 
