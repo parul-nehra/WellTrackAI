@@ -15,6 +15,9 @@ const signupUser = async (req, res) => {
   }
 
   try {
+    // Ensure database is connected
+    await prisma.$connect();
+    
     const existingUser = await prisma.users.findFirst({
       where: {
         OR: [
@@ -37,7 +40,7 @@ const signupUser = async (req, res) => {
     return res.status(201).json({ message: "User created successfully!", token: tokens.accessTokens });
   } catch (err) {
     console.error("Signup error:", err);
-    return res.status(500).json({ message: "Server Error!", error: err.message });
+    return res.status(500).json({ message: "Database connection error. Please try again.", error: err.message });
   }
 };
 
