@@ -12,7 +12,7 @@ const leaderboardRoutes = require("./routes/leaderboardRoutes.js")
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'https://well-track-ai.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://well-track-ai.vercel.app', 'https://welltrackaibackend.vercel.app'];
 
 app.use(cors({
   origin: allowedOrigins,
